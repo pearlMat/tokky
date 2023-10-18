@@ -4,19 +4,19 @@ import (
 	"database/sql"
 	"flag"
 	_ "github.com/go-sql-driver/mysql"
+	"text/template"
 	"log"
 	"net/http"
-	"tokky/internal/models"
 	"os"
+	"tokky/internal/models"
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	snippets *models.SnippetModel
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	snippets      *models.SnippetModel
+	templateCache map[string]*template.Template
 }
-
-
 
 func main() {
 	// Define a new command-line flag with the name 'addr', a default value of ":4000"
@@ -42,10 +42,17 @@ func main() {
 	// We also defer a call to db.Close(), so that the connection pool is closed
 	// before the main() function exits.
 	defer db.Close()
+
+	// Initialize a new template cache...
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
 		snippets: &models.SnippetModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	// Initialize a new http.Server struct. We set the Addr and Handler fields so
