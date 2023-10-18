@@ -9,11 +9,15 @@ import (
 	"tokky/internal/models"
 )
 
+
+
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		app.notFound(w)
 		return
 	}
+
+	//app.render(w, http.StatusOK, "home.tmpl", data)
 
 	// Initialize a slice containing the paths to the two files. It's important
 	// to note that the file containing our base template must be the *first*
@@ -34,7 +38,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		http.Error(w, "Internal Server Error", 500)
 	}
-	//w.Write([]byte("Hello from Snippetbox"))
+	w.Write([]byte("Hello from Snippetbox"))
 }
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
