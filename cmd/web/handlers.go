@@ -140,11 +140,11 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	// to the r.PostForm map. This also works in the same way for PUT and PATCH
 	// requests. If there are any errors, we use our app.ClientError() helper to
 	// send a 400 Bad Request response to the user.
-	err := r.ParseForm()
+	/*err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
-	}
+	}*/
 	// Use the r.PostForm.Get() method to retrieve the title and content
 	// from the r.PostForm map.
 	//title := r.PostForm.Get("title")
@@ -174,7 +174,12 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	// request and *a pointer* to our snippetCreateForm struct. This will
 	// essentially fill our struct with the relevant values from the HTML form.
 	// If there is a problem, we return a 400 Bad Request response to the client.
-	err = app.formDecoder.Decode(&form, r.PostForm)
+	/*err = app.formDecoder.Decode(&form, r.PostForm)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}*/
+	err := app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
