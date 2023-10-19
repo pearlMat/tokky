@@ -129,10 +129,10 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 }*/
 
 type snippetCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -156,7 +156,7 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 
 	// Request response if the conversion fails.
 
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	/*expires, err := strconv.Atoi(r.PostForm.Get("expires"))
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -167,6 +167,17 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		Content: r.PostForm.Get("content"),
 		Expires: expires,
 		//FieldErrors: map[string]string{},
+	}*/
+	// Declare a new empty instance of the snippetCreateForm struct.
+	var form snippetCreateForm
+	// Call the Decode() method of the form decoder, passing in the current
+	// request and *a pointer* to our snippetCreateForm struct. This will
+	// essentially fill our struct with the relevant values from the HTML form.
+	// If there is a problem, we return a 400 Bad Request response to the client.
+	err = app.formDecoder.Decode(&form, r.PostForm)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
 	}
 	// Initialize a map to hold any validation errors for the form fields.
 	//fieldErrors := make(map[string]string)
