@@ -16,12 +16,18 @@ func (app *application) routes() http.Handler {
 	// Update the pattern for the route for the static files.
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
+
+	dynamic := alice.New(app.sessionManager.LoadAndSave)
 	// And then create the routes using the appropriate methods, patterns and
 	// handlers.
-	router.HandlerFunc(http.MethodGet, "/", app.home)
+	/*router.HandlerFunc(http.MethodGet, "/", app.home)
 	router.HandlerFunc(http.MethodGet, "/snippet/view/:id", app.snippetView)
 	router.HandlerFunc(http.MethodGet, "/snippet/create", app.snippetCreate)
-	router.HandlerFunc(http.MethodPost, "/snippet/create", app.snippetCreatePost)
+	router.HandlerFunc(http.MethodPost, "/snippet/create", app.snippetCreatePost)*/
+	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.home))
+	router.Handler(http.MethodGet, "/snippet/view/:id", dynamic.ThenFunc(app.snippetView))
+	router.Handler(http.MethodGet, "/snippet/create", dynamic.ThenFunc(app.snippetCreate))
+	router.Handler(http.MethodPost, "/snippet/create", dynamic.ThenFunc(app.snippetCreatePost))
 	/*mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
