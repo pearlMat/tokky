@@ -114,6 +114,9 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
+	data.Form = snippetCreateForm{
+		Expires: 365,
+	}
 	app.render(w, http.StatusOK, "create.html", data)
 }
 
@@ -181,7 +184,7 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	if len(form.FieldErrors) > 0 {
 		data := app.newTemplateData(r)
 		data.Form = form
-		app.render(w, http.StatusUnprocessableEntity, "create.tmpl", data)
+		app.render(w, http.StatusUnprocessableEntity, "create.html", data)
 		return
 	}
 	id, err := app.snippets.Insert(form.Title, form.Content, form.Expires)
