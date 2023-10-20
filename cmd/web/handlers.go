@@ -26,8 +26,32 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "signup.html", data)
 }
 func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
+	// Declare an zero-valued instance of our userSignupForm struct.
+	var form userSignupForm
+	// Parse the form data into the userSignupForm struct.
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	// Validate the form contents using our helper functions.
+	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "This field must be a valid email address")
+	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
+	form.CheckField(validator.MinChars(form.Password, 8), "password", "This field must be at least 8 characters long")
+	// If there are any errors, redisplay the signup form along with a 422
+	// status code.
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, http.StatusUnprocessableEntity, "signup.html", data)
+		return
+	}
+	// Otherwise send the placeholder response (for now!).
 	fmt.Fprintln(w, "Create a new user...")
 }
+
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 }
