@@ -6,9 +6,14 @@ import (
 	"fmt"
 	"github.com/go-playground/form/v4"
 	"net/http"
+	"github.com/justinas/nosurf"
 	"runtime/debug"
 	"time"
 )
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
+}
 
 func (app *application) decodePostForm(r *http.Request, dst any) error {
 	// Call ParseForm() on the request, in the same way that we did in our
@@ -59,8 +64,10 @@ func (app *application) notFound(w http.ResponseWriter) {
 
 func (app *application) newTemplateData(r *http.Request) *templateData {
 	return &templateData{
-		Flash: app.sessionManager.PopString(r.Context(), "flash"),
+		Flash:       app.sessionManager.PopString(r.Context(), "flash"),
 		CurrentYear: time.Now().Year(),
+		IsAuthenticated: app.isAuthenticated(r),
+		CSRFToken: nosurf.Token(r), 
 	}
 }
 
