@@ -5,14 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-playground/form/v4"
-	"net/http"
 	"github.com/justinas/nosurf"
+	"net/http"
 	"runtime/debug"
 	"time"
 )
 
 func (app *application) isAuthenticated(r *http.Request) bool {
-	return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
+	isAuthenticated, ok := r.Context().Value(isAuthenticatedContextKey).(bool)
+	if !ok {
+		return false
+	}
+	return isAuthenticated
 }
 
 func (app *application) decodePostForm(r *http.Request, dst any) error {
@@ -64,10 +68,10 @@ func (app *application) notFound(w http.ResponseWriter) {
 
 func (app *application) newTemplateData(r *http.Request) *templateData {
 	return &templateData{
-		Flash:       app.sessionManager.PopString(r.Context(), "flash"),
-		CurrentYear: time.Now().Year(),
+		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
+		CurrentYear:     time.Now().Year(),
 		IsAuthenticated: app.isAuthenticated(r),
-		CSRFToken: nosurf.Token(r), 
+		CSRFToken:       nosurf.Token(r),
 	}
 }
 

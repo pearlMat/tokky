@@ -4,6 +4,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 	"net/http"
+	//"tokky/ui"
 )
 
 // The routes() method returns a servemux containing our application routes.
@@ -15,9 +16,10 @@ func (app *application) routes() http.Handler {
 	})
 	// Update the pattern for the route for the static files.
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
+	//fileServer := http.FileServer(http.FS(ui.Files))
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
 
-	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf)
+	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 	// And then create the routes using the appropriate methods, patterns and
 	// handlers.
 	/*router.HandlerFunc(http.MethodGet, "/", app.home)
