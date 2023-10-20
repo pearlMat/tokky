@@ -22,7 +22,8 @@ func Matches(value string, rx *regexp.Regexp) bool {
 // Define a new Validator type which contains a map of validation errors for our
 // form fields.
 type Validator struct {
-	FieldErrors map[string]string
+	FieldErrors    map[string]string
+	NonFieldErrors []string
 }
 
 // Valid() returns true if the FieldErrors map doesn't contain any entries.
@@ -69,4 +70,8 @@ func PermittedInt(value int, permittedValues ...int) bool {
 		}
 	}
 	return false
+}
+
+func (v *Validator) AddNonFieldError(message string) {
+	v.NonFieldErrors = append(v.NonFieldErrors, message)
 }
