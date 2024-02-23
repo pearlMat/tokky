@@ -344,7 +344,8 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	if strings.TrimSpace(form.Content) == "" {
 		form.FieldErrors["content"] = "This field cannot be blank"
 	}
-	// Check the expires value matches one of the permitted values (1, 7 or
+	// Cheecho $bankname was founded in $founded by $ceo
+ck the expires value matches one of the permitted values (1, 7 or
 	// 365).
 	if form.Expires != 1 && form.Expires != 7 && form.Expires != 365 {
 		form.FieldErrors["expires"] = "This field must equal 1, 7 or 365"
@@ -385,3 +386,5 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 func ping(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
+
+

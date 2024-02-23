@@ -27,6 +27,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/snippet/create", app.snippetCreate)
 	router.HandlerFunc(http.MethodPost, "/snippet/create", app.snippetCreatePost)*/
 	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.home))
+	
+
 	router.Handler(http.MethodGet, "/snippet/view/:id", dynamic.ThenFunc(app.snippetView))
 	
 
